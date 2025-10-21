@@ -10,14 +10,20 @@ const opcoes = ref(false)
     <img src="/public/RiJoMovies.png" alt="RijoMovies Logo" />
     <button @click="opcoes = true">Filmes</button>
     </div>
+    <div class="search">
+      <input type="text" placeholder="Pesquisar..." />
+    </div>
+    <div class="perfil_Btn-login">
+    <button>Login</button>
+    <button>Entrar</button>
+    </div>
+
+
+
     <div v-if="opcoes">
       <select name="paises" id="paises">
         <!--Aqui vou ter q pegar da api os países. E provavelmente colocar a api no pai e mandar as infos para os filhos-->
       </select>
-    </div>
-    <div class="perfil_Btn-login">
-    <button class="perfil"><span class="mdi mdi-account-circle"></span></button>
-    <button>Entrar</button>
     </div>
   </header>
 </template>
@@ -30,7 +36,7 @@ header {
 
   & img{
     height: 70px;
-    margin: 10px 0 0 30px;
+    margin: 10px 0 5px 30px;
   }
 
   & .logo_Btn-filmes{
@@ -45,12 +51,28 @@ header {
       font-size: 20px;
       cursor: pointer;
     }
+
+    
+  }
+
+  & .search{
+    display: flex;
+    align-items: center;
+
+    & input{
+      width: 700px;
+      height: 40px;
+      border-radius: 5px;
+      border: none;
+      padding: 5px 10px;
+      font-size: 16px;
+    }
   }
 
   & .perfil_Btn-login{
     display: flex;
     align-items: center;
-    gap: 50px;
+    gap: 60px;
     margin: 0 60px 0 0;
 
     & button{
@@ -60,7 +82,9 @@ header {
       font-size: 20px;
       cursor: pointer;
     }
-
+    & button:hover{
+      color: rgb(255, 0, 0);
+    }
     & .perfil{
       font-size: 30px;
     }
