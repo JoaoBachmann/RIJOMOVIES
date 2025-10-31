@@ -1,9 +1,13 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import api from '@/plugins/axios'
-const opcoes = ref(false)
+const opcoesP = ref(false)
 const paises = ref([])
-const selected = ref(null) // aqui vai o país escolhido
+const selectedP = ref(null) // aqui vai o país escolhido
+
+const opcoesA = ref(false)
+const atores = ref([])
+const selectedA = ref(null) // aqui vai o ator escolhido
 
 const getCountries = async () => {
   try {
@@ -13,8 +17,41 @@ const getCountries = async () => {
     console.error('Erro ao buscar países:', error)
   }
 }
+const getActors = async () => {
+  try {
+    let allActors = []
+    for (let page = 1; page <= 20; page++) { // muda o número pra quantas páginas quiser
+      const { data } = await api.get(`/person/popular?page=${page}`)
+      allActors.push(...data.results)
+    }
+    atores.value = allActors
+  } catch (error) {
+    console.error('Erro ao buscar atores:', error)
+  }
+}
+const atoresFamosos = computed(() => {
+  return atores.value.filter(ator => ator.popularity >= 5)
+})
+
+
+const searchA = ref('')
+
+const filteredAtores = computed(() => {
+  if (!searchA.value) return atoresFamosos.value 
+  return atoresFamosos.value.filter(ator =>
+    ator.name.toLowerCase().includes(searchA.value.toLowerCase())
+  )
+})
+
+
+const selectAtor = (ator) => {
+  selectedA.value = ator.name
+  searchA.value = ''
+}
+
 onMounted(() => {
   getCountries()
+  getActors()
 })
 </script>
 
@@ -23,18 +60,18 @@ onMounted(() => {
     <div class="logo_Btn-filmes">
       <img src="/public/RiJoMovies.png" alt="RijoMovies Logo" />
 
-      <div class="filmes-container" @mouseenter="opcoes = true" @mouseleave="opcoes = false">
+      <div class="filmes-container" @mouseenter="opcoesP = true" @mouseleave="opcoesP = false">
         <button>Filmes</button>
 
-        <div class="custom-select" v-if="opcoes">
+        <div class="custom-selectP" v-if="opcoesP">
           <div class="selected">{{ 'Selecione um país' }}</div>
-          <ul v-show="opcoes" class="options">
+          <ul v-show="opcoesP" class="options">
             <li
               v-for="pais in paises"
               :key="pais.iso_3166_1"
               @click="
-                selected = pais.native_name || pais.english_name;
-                opcoes = false
+                selectedA = pais.native_name || pais.english_name;
+                opcoesP = false
               "
             >
               {{ pais.native_name || pais.english_name }}
@@ -43,7 +80,25 @@ onMounted(() => {
         </div>
       </div>
 
-      <button>Atores</button>
+      <div class="filmes-container" @mouseenter="opcoesA = true" @mouseleave="opcoesA = false">
+        <button>Atores</button>
+        <div class="custom-selectA" v-if="opcoesA">
+          <div class="selected"><input
+      type="text"
+      v-model="searchA"
+      placeholder="Pesquisar ator famoso..."
+    /></div>
+          <ul v-if="filteredAtores.length">
+      <li
+        v-for="ator in filteredAtores"
+        :key="ator.id"
+        @click="selectAtor(ator)"
+      >
+        {{ ator.name }} — {{ ator.popularity.toFixed(1) }}
+      </li>
+    </ul>
+        </div>
+      </div>
     </div>
     <div class="search">
       <input type="text" placeholder="Pesquisar..." />
@@ -54,8 +109,8 @@ onMounted(() => {
       <button>Entrar</button>
     </div>
   </header>
-  <p>{{ selected }}</p>
-  <p>{{ atores }}</p>
+  <p>{{ selectedP }}</p>
+  <p>{{ selectedA }}</p>
 </template>
 
 <style scoped>
@@ -97,7 +152,7 @@ header {
     position: relative;
 
     & input {
-      width: 700px;
+      width: 600px;
       height: 40px;
       border-radius: 5px;
       border: none;
@@ -134,7 +189,7 @@ header {
     }
   }
 }
-.custom-select {
+.custom-selectP {
   width: 200px;
   background: black;
   color: white;
@@ -145,11 +200,11 @@ header {
   left: 200px;
 }
 
-.custom-select .selected {
+.custom-selectP .selected {
   padding: 8px 10px;
 }
 
-.custom-select .options {
+.custom-selectP .options {
   position: absolute;
   top: 100%;
   left: 0;
@@ -165,11 +220,59 @@ header {
   z-index: 10;
 }
 
-.custom-select .options li {
+.custom-selectP .options li {
   padding: 8px 10px;
 }
 
-.custom-select .options li:hover {
+.custom-selectP .options li:hover {
+  background: rgb(40, 40, 40);
+}
+
+.custom-selectA {
+  width: 200px;
+  background: black;
+  color: white;
+  border: 1px solid red;
+  border-radius: 5px;
+  position: absolute;
+  cursor: pointer;
+  left: 340px;
+  top: 85px;
+}
+
+.custom-selectA .selected {
+  padding: 8px 10px;
+
+  & input {
+    width: 180px;
+    background: black;
+    border: none;
+    color: white;
+    outline: none;
+  }
+}
+
+.custom-selectA .options {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background: black;
+  border: 1px solid red;
+  border-radius: 5px;
+  max-height: 200px;
+  overflow-y: auto;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  z-index: 10;
+}
+
+.custom-selectA .options li {
+  padding: 8px 10px;
+}
+
+.custom-selectA .options li:hover {
   background: rgb(40, 40, 40);
 }
 </style>
