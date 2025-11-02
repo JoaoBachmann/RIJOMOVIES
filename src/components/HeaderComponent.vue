@@ -37,12 +37,27 @@ const atoresFamosos = computed(() => {
 const searchA = ref('')
 
 const filteredAtores = computed(() => {
-  if (!searchA.value) return atoresFamosos.value 
+  if (!searchA.value) return atoresFamosos.value
   return atoresFamosos.value.filter(ator =>
     ator.name.toLowerCase().includes(searchA.value.toLowerCase())
   )
 })
 
+
+const searchP = ref('');
+const filteredCountry = computed(() => {
+  const paisesSearch = [];
+
+  for (const pais of paises.value) {
+    const nomePais = pais.native_name || pais.english_name;
+    if (!searchP.value || nomePais.toLowerCase().includes(searchP.value.toLowerCase())) {
+      paisesSearch.push(pais);
+    }
+  }
+
+  return paisesSearch;
+});
+//se conseguir traduzir os nomes dos países para portugues
 
 const selectAtor = (ator) => {
   selectedA.value = ator.name
@@ -60,43 +75,29 @@ onMounted(() => {
     <div class="logo_Btn-filmes">
       <img src="/public/RiJoMovies.png" alt="RijoMovies Logo" />
 
-      <div class="filmes-container" @mouseenter="opcoesP = true" @mouseleave="opcoesP = false">
+      <div class="container" @mouseenter="opcoesP = true" @mouseleave="opcoesP = false">
         <button>Filmes</button>
 
         <div class="custom-selectP" v-if="opcoesP">
-          <div class="selected">{{ 'Selecione um país' }}</div>
+          <div class="selected"><input type="text" v-model="searchP" placeholder="Pesquisar país..."></div>
           <ul v-show="opcoesP" class="options">
-            <li
-              v-for="pais in paises"
-              :key="pais.iso_3166_1"
-              @click="
-                selectedA = pais.native_name || pais.english_name;
-                opcoesP = false
-              "
-            >
+            <li v-for="pais in filteredCountry" :key="pais.iso_3166_1" @click="
+              selectedP = pais.native_name || pais.english_name; opcoesP = false">
               {{ pais.native_name || pais.english_name }}
             </li>
           </ul>
         </div>
       </div>
 
-      <div class="filmes-container" @mouseenter="opcoesA = true" @mouseleave="opcoesA = false">
+      <div class="container" @mouseenter="opcoesA = true" @mouseleave="opcoesA = false">
         <button>Atores</button>
         <div class="custom-selectA" v-if="opcoesA">
-          <div class="selected"><input
-      type="text"
-      v-model="searchA"
-      placeholder="Pesquisar ator famoso..."
-    /></div>
-          <ul v-if="filteredAtores.length">
-      <li
-        v-for="ator in filteredAtores"
-        :key="ator.id"
-        @click="selectAtor(ator)"
-      >
-        {{ ator.name }} — {{ ator.popularity.toFixed(1) }}
-      </li>
-    </ul>
+          <div class="selected"><input type="text" v-model="searchA" placeholder="Pesquisar ator famoso..." /></div>
+          <ul v-if="filteredAtores.length" class="options">
+            <li v-for="ator in filteredAtores" :key="ator.id" @click="selectAtor(ator); opcoesA = false" >
+              {{ ator.name }} — {{ ator.popularity.toFixed(1) }}
+            </li>
+          </ul>
         </div>
       </div>
     </div>
@@ -114,10 +115,12 @@ onMounted(() => {
 </template>
 
 <style scoped>
+
 header {
   background-color: black;
   display: flex;
   justify-content: space-between;
+  padding: 0 1vw;
 
   & img {
     height: 70px;
@@ -136,10 +139,12 @@ header {
       font-size: 20px;
       cursor: pointer;
     }
+
     & button:hover {
       color: rgb(255, 0, 0);
     }
-    & .filmes-container {
+
+    & .container {
       & button:first-child {
         padding: 31px 0;
       }
@@ -181,14 +186,17 @@ header {
       font-size: 20px;
       cursor: pointer;
     }
+
     & button:hover {
       color: rgb(255, 0, 0);
     }
+
     & .perfil {
       font-size: 30px;
     }
   }
 }
+
 .custom-selectP {
   width: 200px;
   background: black;
@@ -202,6 +210,14 @@ header {
 
 .custom-selectP .selected {
   padding: 8px 10px;
+
+  & input {
+    width: 180px;
+    background: black;
+    border: none;
+    color: white;
+    outline: none;
+  }
 }
 
 .custom-selectP .options {
@@ -230,6 +246,8 @@ header {
 
 .custom-selectA {
   width: 200px;
+  height: auto;
+  padding-right: 10px;
   background: black;
   color: white;
   border: 1px solid red;
@@ -254,14 +272,13 @@ header {
 
 .custom-selectA .options {
   position: absolute;
-  top: 100%;
   left: 0;
   width: 100%;
   background: black;
   border: 1px solid red;
   border-radius: 5px;
   max-height: 200px;
-  overflow-y: auto;
+  overflow: auto;
   list-style: none;
   margin: 0;
   padding: 0;
