@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import api from '@/plugins/axios'
-const opcoesP = ref(false)
+const opcoesP = ref(true)
 const paises = ref([])
 const selectedP = ref(null) // aqui vai o país escolhido
 
@@ -79,7 +79,8 @@ onMounted(() => {
         <button>Filmes</button>
 
         <div class="custom-selectP" v-if="opcoesP">
-          <div class="selected"><input type="text" v-model="searchP" placeholder="Pesquisar país..."></div>
+          <div class="selected"><input type="text" id="search-country" name="search-country" v-model="searchP"
+              placeholder="Pesquisar país..."></div>
           <ul v-show="opcoesP" class="options">
             <li v-for="pais in filteredCountry" :key="pais.iso_3166_1" @click="
               selectedP = pais.native_name || pais.english_name; opcoesP = false">
@@ -92,9 +93,10 @@ onMounted(() => {
       <div class="container" @mouseenter="opcoesA = true" @mouseleave="opcoesA = false">
         <button>Atores</button>
         <div class="custom-selectA" v-if="opcoesA">
-          <div class="selected"><input type="text" v-model="searchA" placeholder="Pesquisar ator famoso..." /></div>
+          <div class="selected"><input type="text" id="search-actor" name="search-actor" v-model="searchA"
+              placeholder="Pesquisar ator famoso..." /></div>
           <ul v-if="filteredAtores.length" class="options">
-            <li v-for="ator in filteredAtores" :key="ator.id" @click="selectAtor(ator); opcoesA = false" >
+            <li v-for="ator in filteredAtores" :key="ator.id" @click="selectAtor(ator); opcoesA = false">
               {{ ator.name }} — {{ ator.popularity.toFixed(1) }}
             </li>
           </ul>
@@ -115,12 +117,13 @@ onMounted(() => {
 </template>
 
 <style scoped>
-
 header {
   background-color: black;
   display: flex;
   justify-content: space-between;
   padding: 0 1vw;
+  position: relative;
+  z-index: 10;
 
   & img {
     height: 70px;
@@ -213,7 +216,7 @@ header {
 
   & input {
     width: 180px;
-    background: black;
+    background:  black;
     border: none;
     color: white;
     outline: none;

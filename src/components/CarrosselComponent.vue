@@ -70,8 +70,7 @@ onMounted(async () => {
 </template>
 
 
-<style
-  scoped>
+<style scoped>
   .carousel {
     width: 100%;
     height: 80vh;
