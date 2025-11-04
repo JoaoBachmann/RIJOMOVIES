@@ -15,7 +15,7 @@ const carregarSlides = async () => {
     const { data } = await api.get('/movie/popular')
 
     slides.value = await Promise.all(
-      data.results.slice(0, 8).map(async (filme) => {
+      data.results.slice(0, 6).map(async (filme) => {
         const detalhes = await api.get(`/movie/${filme.id}`)
         return {
           id: filme.id,
