@@ -1,4 +1,12 @@
 <script setup>
+import CarrosselComponent from './components/CarrosselComponent.vue';
+</script>
+
+<template>
+  <header></header>
+  <main><carrossel-component></carrossel-component></main>
+  <footer></footer>
+
 import HeaderComponent from './components/HeaderComponent.vue';
 </script>
 
@@ -6,6 +14,4 @@ import HeaderComponent from './components/HeaderComponent.vue';
   <HeaderComponent />
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>
