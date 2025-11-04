@@ -1,6 +1,8 @@
 import './assets/main.css'
 import '@fortawesome/fontawesome-free/css/all.css'
 import 'vue-loading-overlay/dist/css/index.css';
+import '@mdi/font/css/materialdesignicons.css';
+import '@mdi/font/css/materialdesignicons.css';
 
 import { createApp } from 'vue'
 import App from './App.vue'
