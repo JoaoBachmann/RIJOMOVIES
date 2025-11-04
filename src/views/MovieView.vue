@@ -1,4 +1,4 @@
-<script setup> 
+<script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import api from '@/plugins/axios'
@@ -15,94 +15,163 @@ onMounted(async () => {
 
   filme.value = data
 
+  const diretor = data.credits.crew.find((pessoa) => pessoa.job === 'Director')
+  filme.value.director = diretor ? diretor.name : 'Desconhecido'
+
+  filme.value.genresList = data.genres.map((g) => g.name).join(', ')
+
+  const atorPrincipal = data.credits.cast[0]
+  filme.value.mainActor = atorPrincipal ? atorPrincipal.name : 'Desconhecido'
+
   const video = data.videos.results.find(
     (v) => v.type === 'Trailer' && v.site === 'YouTube'
   )
 
   trailer.value = video || data.videos.results[0] || null
 })
+
 </script>
 
 <template>
   <div v-if="filme" class="movie-view">
-    <div class="informacao">
-      <h1>{{ filme.title }}</h1>
-      <p class="p">{{ filme.overview }}</p>
-      <p class="runtime"><strong>Runtime:</strong> {{ filme.runtime }} min</p>
-      <p class="release"><strong>Release:</strong> {{ filme.release_date }}</p>
-      <p class="vote"><strong>Rating:</strong> ⭐ {{ filme.vote_average.toFixed(1) }}</p>
 
-      <div v-if="trailer" class="trailer">
-        <h2>Trailer</h2>
-        <iframe
-          width="560"
-          height="315"
-          :src="`https://www.youtube.com/embed/${trailer.key}`"
-          title="Trailer"
-          frameborder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowfullscreen
-        ></iframe>
+    <img class="backdrop" :src="`https://image.tmdb.org/t/p/original${filme.backdrop_path}`" :alt="filme.title" />
+
+    <div class="informacao">
+
+      <div class="direito">
+        <h1>{{ filme.title }}</h1>
+        <p class="p">&nbsp;&nbsp;&nbsp;&nbsp;{{ filme.overview }}</p>
+
+        <div class="ator">
+          <p class="color">Principal Actor</p>
+          <p>{{ filme.mainActor }}</p>
+        </div>
       </div>
+
+      <div class="esquerdo">
+
+        <div class="line">
+          <div>
+            <p><strong>Director:</strong></p>
+            <p> {{ filme.director }} </p>
+          </div>
+
+          <div>
+            <p class="runtime"><strong>Runtime:</strong></p>
+            <p>{{ filme.runtime }} min</p>
+          </div>
+
+          <div>
+            <p class="release"><strong>Release:</strong></p>
+            <p>{{ filme.release_date }}</p>
+          </div>
+
+          <div>
+            <p class="vote"><strong>Rating:</strong></p>
+            <p>{{ filme.vote_average.toFixed(1) }}⭐</p>
+          </div>
+
+          <div>
+            <p class="genres"><strong>Genres:</strong></p>
+            <p>{{ filme.genresList }}</p>
+          </div>
+        </div>
+        <div v-if="trailer" class="trailer">
+          <iframe width="460" height="250" :src="`https://www.youtube.com/embed/${trailer.key}`" title="Trailer"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen></iframe>
+        </div>
+
+      </div>
+
     </div>
 
-    <img
-      class="backdrop"
-      :src="`https://image.tmdb.org/t/p/original${filme.backdrop_path}`"
-      :alt="filme.title"
-    />
+
   </div>
 </template>
 
 <style scoped>
 .movie-view {
+  position: relative;
+  min-height: 100vh;
   color: white;
-  font-family: 'Inter', sans-serif;
-  padding: 60px 40px;
-  display: flex;
+  overflow: hidden;
 }
 
-.movie-view h1 {
-  padding: 0 0 0 20px;
-  font-size: 3vw;
-  margin-bottom: 20px;
-}
-
-.movie-view .p {
-  text-indent: 2vw;
-  font-size: 1vw;
-  margin-bottom: 1.5vw;
-}
-
-.movie-view .runtime,
-.release,
-.vote {
-  font-size: 1vw;
-}
-/*imagem do filme*/ 
+/*imagem de fundo*/
 .backdrop {
-  width: 50%;
-  max-height: 100vh;
-  padding: 0 2vw;
-  border-radius: 2vw;
-  object-fit: cover;
-}
-
-.trailer {
-  margin-top: 2vw;
-  padding: 0 0 0 2vw;
-}
-
-.trailer h2 {
-  font-size: 1.3vw;
-  margin-bottom: 1vw;
-  padding: 0 0 0 14.5vw;
-}
-
-.trailer iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
-  max-width: 560px;
-  height: 315px;
-  border-radius: 1vw;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.4);
+  z-index: 0;
+}
+
+.informacao {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+  padding: 0 6rem;
+}
+
+.direito {
+  max-width: 40%;
+}
+
+.direito h1 {
+  font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.direito .p {
+  font-size: 1rem;
+
+}
+
+.direito .color{
+  color: rgb(150, 150, 150);
+  font-size: 1.5rem;
+  margin-top: 9rem;
+}
+.direito .ator {
+  margin-top: 3rem;
+}
+
+
+.line {
+  border-top: 1px solid rgb(84, 84, 84);
+  margin-top: 3vw;
+}
+
+.esquerdo {
+  max-width: 40%;
+  text-align: right;
+  line-height: 1.6rem;
+  border-left: 1px solid rgb(84, 84, 84);
+  border-top: 1px solid rgb(84, 84, 84);
+}
+
+.esquerdo p {
+  font-size: 1rem;
+
+}
+
+.esquerdo p strong {
+  font-weight: bold;
+  font-size: 1.2rem;
+  color: rgb(101, 101, 101);
+}
+
+.esquerdo div {
+  margin-bottom: 1rem;
+  padding: 0.7vw 0 0 0;
 }
 </style>
