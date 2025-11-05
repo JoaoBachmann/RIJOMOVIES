@@ -155,7 +155,7 @@ onMounted(async () => {
   max-width: 40%;
   text-align: right;
   line-height: 1.6rem;
-  border-left: 1px solid rgb(84, 84, 84);
+  border-left: 1px solid rgb(95, 95, 95);
   border-top: 1px solid rgb(84, 84, 84);
 }
 
@@ -167,7 +167,7 @@ onMounted(async () => {
 .esquerdo p strong {
   font-weight: bold;
   font-size: 1.2rem;
-  color: rgb(101, 101, 101);
+  color: rgb(137, 137, 137);
 }
 
 .esquerdo div {
