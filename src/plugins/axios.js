@@ -1,11 +1,10 @@
-import axios from 'axios'
+import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'https://api.themoviedb.org/3',
-  params: {
-    api_key: 'a3823122779bf76b11f70cd8ec754d8a',
-    language: 'pt-BR'
-  }
-})
+  baseURL: 'https://api.themoviedb.org/3/',
+  headers: {
+    Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJmMDM5MTI0MDYwODUyYzZkYjY4NzkwNmE5M2RiMzk0ZCIsIm5iZiI6MTc1OTI1MjUxOS43OTEwMDAxLCJzdWIiOiI2OGRjMTAyNzk1MGE1MTExMGFjNzZmOWMiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.90MkSbAAUQ4nnfiTTH098DGw89glRem6reBCPiiwhMs`,
+  },
+});
 
-export default api
+export default api;
