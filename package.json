@@ -17,16 +17,14 @@
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^7.1.0",
-    "axios": "^1.12.2",
+    "@jamescoyle/vue-icon": "^0.1.2",
+    "@mdi/font": "^7.4.47",
+    "axios": "^1.13.1",
     "overlay": "^1.2.5",
     "vue": "^3.5.22",
     "vue-loading": "^0.1.4",
     "vue-loading-overlay": "^6.0.6",
     "vue-router": "^4.6.3"
-
-    "@mdi/font": "^7.4.47",
-    "axios": "^1.13.1",
-    "vue": "^3.5.22"
   },
   "devDependencies": {
     "@eslint/js": "^9.33.0",

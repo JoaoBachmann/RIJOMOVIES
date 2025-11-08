@@ -1,12 +1,19 @@
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import api from '@/plugins/axios'
 import Loading from 'vue-loading-overlay' 
 import 'vue-loading-overlay/dist/css/index.css' 
+import '@mdi/font/css/materialdesignicons.css';
 
+const router = useRouter()
 const isLoading = ref(false)
 const slides = ref([])
 const current = ref(0)
+
+const abrirFilme = (id) => {
+  router.push({ name: 'MovieView', params: { id } })
+}
 
 const carregarSlides = async () => {
   isLoading.value = true
@@ -56,9 +63,7 @@ onMounted(async () => {
           <h1>{{ slides[current].title }}</h1>
           <p class="tempo">{{ slides[current].duration }}</p>
           <p class="descricao">{{ slides[current].description }}</p>
-          <button class="assistir">
-            <i class="fas fa-play"></i> Assistir Agora
-          </button>
+          <button class="assistir" @click="abrirFilme(slides[current].id)">▶ Assistir Agora</button>
         </div>
       </div>
       <div class="controles">
@@ -70,8 +75,7 @@ onMounted(async () => {
 </template>
 
 
-<style
-  scoped>
+<style scoped>
   .carousel {
     width: 100%;
     height: 80vh;
