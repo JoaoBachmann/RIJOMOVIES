@@ -128,7 +128,7 @@ onMounted(async () => {
   }
 
   .assistir {
-    background: #a0f271;
+    background: rgba(245, 179, 83, 1);
     color: #000;
     padding: 1rem 3.5rem;
     border: none;
@@ -139,7 +139,7 @@ onMounted(async () => {
   }
 
   .assistir:hover {
-    background: #78d944;
+    background: rgba(245, 179, 83, 1);
   }
 
   .controles {
