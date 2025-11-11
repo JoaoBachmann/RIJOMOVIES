@@ -1,9 +1,17 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import api from '@/plugins/axios'
-const opcoesP = ref(true)
+const opcoesP = ref(false)
 const paises = ref([])
+
 const selectedP = ref(null) // aqui vai o país escolhido
+const emit = defineEmits(['paisSelecionado'])
+const selecionarPais = (pais) => {
+  selectedP.value = pais.native_name || pais.english_name
+  emit('pais-selecionado', pais) 
+  opcoesP.value = false
+}
+
 
 const opcoesA = ref(false)
 const atores = ref([])
@@ -68,12 +76,15 @@ onMounted(() => {
   getCountries()
   getActors()
 })
+
 </script>
 
 <template>
   <header>
     <div class="logo_Btn-filmes">
-      <img src="/public/RiJoMovies.png" alt="RijoMovies Logo" />
+      <RouterLink to="/">
+        <img src="/public/RiJoMovies.png" alt="RijoMovies Logo" />
+      </RouterLink>
 
       <div class="container" @mouseenter="opcoesP = true" @mouseleave="opcoesP = false">
         <button>Filmes</button>
@@ -82,8 +93,7 @@ onMounted(() => {
           <div class="selected"><input type="text" id="search-country" name="search-country" v-model="searchP"
               placeholder="Pesquisar país..."></div>
           <ul v-show="opcoesP" class="options">
-            <li v-for="pais in filteredCountry" :key="pais.iso_3166_1" @click="
-              selectedP = pais.native_name || pais.english_name; opcoesP = false">
+            <li v-for="pais in filteredCountry" :key="pais.iso_3166_1" @click="selecionarPais(pais)">
               {{ pais.native_name || pais.english_name }}
             </li>
           </ul>

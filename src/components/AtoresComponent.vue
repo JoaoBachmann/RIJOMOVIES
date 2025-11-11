@@ -79,7 +79,7 @@ onMounted(() => {
 
 <style scoped>
 .AtoresPopulares {
-  margin: 20px 50px;
+  margin: 20px 50px 0 50px;
   font-family: 'Inter', sans-serif;
   color: white;
   border-bottom: 1px solid #444;

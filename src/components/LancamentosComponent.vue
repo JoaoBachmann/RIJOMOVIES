@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import api from '@/plugins/axios'
 
+// agora falta puxar os filmes do pai e mostar eles aqui. acredito que vou ter que fazer algo para quando n tiver nenhum pais selecionado, no caso mostrar todos os filmes, mantemndo o codigo daqui
 const filmes = ref([])
 const carrossel = ref(null) 
 const router = useRouter()
@@ -47,6 +48,7 @@ onMounted(() => {
 </script>
 
 <template>
+  <main>
   <div class="NovosLancamentos">
     <h1>New Releases</h1>
 
@@ -69,6 +71,7 @@ onMounted(() => {
       <button class="seta direita" @click="rolar('direita')">></button>
     </div>
   </div>
+  </main>
 </template>
 
 <style scoped>
@@ -77,6 +80,7 @@ onMounted(() => {
   font-family: 'Inter', sans-serif;
   color: white;
   border-bottom: 1px solid #444;
+
 }
 
 .NovosLancamentos h1 {
