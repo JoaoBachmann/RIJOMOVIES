@@ -141,7 +141,7 @@ header {
     }
 
     & button:hover {
-      color: rgb(255, 0, 0);
+      color: rgba(245, 179, 83, 1);
     }
 
     & .container {
@@ -188,7 +188,7 @@ header {
     }
 
     & button:hover {
-      color: rgb(255, 0, 0);
+      color: rgba(245, 179, 83, 1);
     }
 
     & .perfil {
@@ -201,7 +201,7 @@ header {
   width: 200px;
   background: black;
   color: white;
-  border: 1px solid red;
+  border: 1px solid rgba(245, 179, 83, 1);
   border-radius: 5px;
   position: absolute;
   cursor: pointer;
@@ -226,7 +226,7 @@ header {
   left: 0;
   width: 100%;
   background: black;
-  border: 1px solid red;
+  border: 1px solid rgba(245, 179, 83, 1);
   border-radius: 5px;
   max-height: 200px;
   overflow-y: auto;
@@ -250,7 +250,7 @@ header {
   padding-right: 10px;
   background: black;
   color: white;
-  border: 1px solid red;
+  border: 1px solid rgba(245, 179, 83, 1);
   border-radius: 5px;
   position: absolute;
   cursor: pointer;
@@ -275,7 +275,7 @@ header {
   left: 0;
   width: 100%;
   background: black;
-  border: 1px solid red;
+  border: 1px solid rgba(245, 179, 83, 1);
   border-radius: 5px;
   max-height: 200px;
   overflow: auto;
