@@ -1,11 +1,17 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router' // 👈 IMPORTA AQUI
 import api from '@/plugins/axios'
 
 const route = useRoute()
+const router = useRouter() // 👈 DEFINE AQUI
+
 const filme = ref(null)
 const trailer = ref(null)
+
+const abrirAtor = (id) => {
+  router.push({ name: 'ActorView', params: { id } }) // 👈 AGORA FUNCIONA
+}
 
 onMounted(async () => {
   const id = route.params.id
@@ -22,6 +28,7 @@ onMounted(async () => {
 
   const atorPrincipal = data.credits.cast[0]
   filme.value.mainActor = atorPrincipal ? atorPrincipal.name : 'Desconhecido'
+  filme.value.mainActorId = atorPrincipal ? atorPrincipal.id : null // 👈 GUARDA O ID
 
   const video = data.videos.results.find(
     (v) => v.type === 'Trailer' && v.site === 'YouTube'
@@ -29,68 +36,64 @@ onMounted(async () => {
 
   trailer.value = video || data.videos.results[0] || null
 })
-
 </script>
 
 <template>
   <div v-if="filme" class="movie-view">
-
-    <img class="backdrop" :src="`https://image.tmdb.org/t/p/original${filme.backdrop_path}`" :alt="filme.title" />
+    <img class="backdrop"
+         :src="`https://image.tmdb.org/t/p/original${filme.backdrop_path}`"
+         :alt="filme.title" />
 
     <div class="informacao">
-
       <div class="direito">
         <h1>{{ filme.title }}</h1>
         <p class="p">&nbsp;&nbsp;&nbsp;&nbsp;{{ filme.overview }}</p>
 
         <div class="ator">
           <p class="color">Principal Actor</p>
-          <p>{{ filme.mainActor }}</p>
+          <!-- 👇 Passa o ID correto do ator -->
+          <div @click="abrirAtor(filme.mainActorId)" class="cursor-pointer hover:underline">
+            {{ filme.mainActor }}
+          </div>
         </div>
       </div>
 
       <div class="esquerdo">
-
         <div class="line">
           <div>
             <p><strong>Director:</strong></p>
-            <p> {{ filme.director }} </p>
+            <p>{{ filme.director }}</p>
           </div>
-
           <div>
             <p class="runtime"><strong>Runtime:</strong></p>
             <p>{{ filme.runtime }} min</p>
           </div>
-
           <div>
             <p class="release"><strong>Release:</strong></p>
             <p>{{ filme.release_date }}</p>
           </div>
-
           <div>
             <p class="vote"><strong>Rating:</strong></p>
             <p>{{ filme.vote_average.toFixed(1) }}⭐</p>
           </div>
-
           <div>
             <p class="genres"><strong>Genres:</strong></p>
             <p>{{ filme.genresList }}</p>
           </div>
         </div>
+
         <div v-if="trailer" class="trailer">
-          <iframe width="460" height="250" :src="`https://www.youtube.com/embed/${trailer.key}`" title="Trailer"
-            frameborder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowfullscreen></iframe>
+          <iframe width="460" height="250"
+                  :src="`https://www.youtube.com/embed/${trailer.key}`"
+                  title="Trailer" frameborder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowfullscreen></iframe>
         </div>
-
       </div>
-
     </div>
-
-
   </div>
 </template>
+
 
 <style scoped>
 .movie-view {

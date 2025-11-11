@@ -13,7 +13,7 @@ const enviarMensagem = () => {
 </script>
 
 <template>
-  <Footer>
+  <footer>
     <div class="imagemFita">
       <div class="fita1"></div>
       <div class="fita1"></div>
@@ -37,7 +37,7 @@ const enviarMensagem = () => {
 
       <img src="/public/claquete.png" alt="">
     </div>
-  </Footer>
+  </footer>
 </template>
 <style lang="scss" scoped>
 footer {
