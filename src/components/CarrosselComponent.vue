@@ -1,12 +1,19 @@
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import api from '@/plugins/axios'
 import Loading from 'vue-loading-overlay' 
 import 'vue-loading-overlay/dist/css/index.css' 
+import '@mdi/font/css/materialdesignicons.css';
 
+const router = useRouter()
 const isLoading = ref(false)
 const slides = ref([])
 const current = ref(0)
+
+const abrirFilme = (id) => {
+  router.push({ name: 'MovieView', params: { id } })
+}
 
 const carregarSlides = async () => {
   isLoading.value = true
@@ -15,7 +22,7 @@ const carregarSlides = async () => {
     const { data } = await api.get('/movie/popular')
 
     slides.value = await Promise.all(
-      data.results.slice(0, 8).map(async (filme) => {
+      data.results.slice(0, 6).map(async (filme) => {
         const detalhes = await api.get(`/movie/${filme.id}`)
         return {
           id: filme.id,
@@ -56,9 +63,7 @@ onMounted(async () => {
           <h1>{{ slides[current].title }}</h1>
           <p class="tempo">{{ slides[current].duration }}</p>
           <p class="descricao">{{ slides[current].description }}</p>
-          <button class="assistir">
-            <i class="fas fa-play"></i> Assistir Agora
-          </button>
+          <button class="assistir" @click="abrirFilme(slides[current].id)">▶ Assistir Agora</button>
         </div>
       </div>
       <div class="controles">
@@ -123,7 +128,7 @@ onMounted(async () => {
   }
 
   .assistir {
-    background: #a0f271;
+    background: rgba(245, 179, 83, 1);
     color: #000;
     padding: 1rem 3.5rem;
     border: none;
@@ -134,7 +139,7 @@ onMounted(async () => {
   }
 
   .assistir:hover {
-    background: #78d944;
+    background: rgba(245, 179, 83, 1);
   }
 
   .controles {

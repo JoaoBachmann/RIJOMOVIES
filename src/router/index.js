@@ -1,22 +1,21 @@
-import { name } from '@vue/eslint-config-prettier/skip-formatting';
-import { createRouter, createWebHistory } from 'vue-router';
+import { createRouter, createWebHistory } from 'vue-router'
 
 const routes = [
   {
     path: '/',
-    name: '',
-    component: () => import(''),
+    name: 'Home',
+    component: () => import('@/views/HomeView.vue')
   },
   {
-    path: '/',
-    name: '',
-    component: () => import(''),
-  },
-];
+    path: '/movie/:id',
+    name: 'MovieView',
+    component: () => import('@/views/MovieView.vue')
+  }
+]
 
 const router = createRouter({
   history: createWebHistory(),
-  routes,
-});
+  routes
+})
 
-export default router;
+export default router
