@@ -10,6 +10,12 @@ const routes = [
     path: '/movie/:id',
     name: 'MovieView',
     component: () => import('@/views/MovieView.vue')
+  },
+  
+  {
+    path: '/pais/:id',
+    name: 'PaisView',
+    component: () => import('@/views/PaisView.vue')
   }
 ]
 

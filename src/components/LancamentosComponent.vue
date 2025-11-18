@@ -3,7 +3,6 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import api from '@/plugins/axios'
 
-// agora falta puxar os filmes do pai e mostar eles aqui. acredito que vou ter que fazer algo para quando n tiver nenhum pais selecionado, no caso mostrar todos os filmes, mantemndo o codigo daqui
 const filmes = ref([])
 const carrossel = ref(null) 
 const router = useRouter()
