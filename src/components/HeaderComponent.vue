@@ -11,7 +11,7 @@ const abrirPais = (pais) => { // Recebe o objeto completo do país
     router.push({ 
         name: 'PaisView', 
         params: { id: pais.iso_3166_1 }, // Passa o código para a URL
-        query: { name: pais.native_name || pais.english_name } // Passa o nome para uso
+        query: { name: pais.native_name || pais.english_name}
     })
 }
 const router = useRouter()
