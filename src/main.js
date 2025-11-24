@@ -1,4 +1,5 @@
-import './assets/main.css'
+import './assets/main.css';
+import '@mdi/font/css/materialdesignicons.css';
 import '@fortawesome/fontawesome-free/css/all.css'
 import 'vue-loading-overlay/dist/css/index.css'
 

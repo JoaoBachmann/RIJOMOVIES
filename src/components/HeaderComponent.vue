@@ -4,13 +4,13 @@ import { useRouter } from 'vue-router'
 import api from '@/plugins/axios'
 const opcoesP = ref(false)
 const paises = ref([])
-const selectedP = ref(null) // aqui vai o país escolhido
 
 
-const abrirPais = (pais) => { // Recebe o objeto completo do país
+
+const abrirPais = (pais) => {
     router.push({ 
         name: 'PaisView', 
-        params: { id: pais.iso_3166_1 }, // Passa o código para a URL
+        params: { id: pais.iso_3166_1 },
         query: { name: pais.native_name || pais.english_name}
     })
 }
@@ -19,7 +19,15 @@ const router = useRouter()
 
 const opcoesA = ref(false)
 const atores = ref([])
-const selectedA = ref(null) // aqui vai o ator escolhido
+
+
+const abrirAtor = (ator) => {
+    router.push({ 
+        name: 'AtorView', 
+        params: { id: ator.id }
+    })
+}
+
 
 const getCountries = async () => {
   try {
@@ -32,7 +40,7 @@ const getCountries = async () => {
 const getActors = async () => {
   try {
     let allActors = []
-    for (let page = 1; page <= 20; page++) { // muda o número pra quantas páginas quiser
+    for (let page = 1; page <= 20; page++) {
       const { data } = await api.get(`/person/popular?page=${page}`)
       allActors.push(...data.results)
     }
@@ -69,12 +77,7 @@ const filteredCountry = computed(() => {
 
   return paisesSearch;
 });
-//se conseguir traduzir os nomes dos países para portugues
 
-const selectAtor = (ator) => {
-  selectedA.value = ator.name
-  searchA.value = ''
-}
 
 onMounted(() => {
   getCountries()
@@ -89,7 +92,7 @@ onMounted(() => {
       <router-link to="/"><img src="/public/RiJoMovies.png" alt="RijoMovies Logo" /></router-link>
       
 
-      <div class="container" @mouseenter="opcoesP = true" @mouseleave="opcoesP = false">
+      <div class="container" @mouseleave="opcoesP = false" @click="opcoesP = true">
         <button>Filmes</button>
 
         <div class="custom-selectP" v-if="opcoesP">
@@ -103,13 +106,13 @@ onMounted(() => {
         </div>
       </div>
 
-      <div class="container" @mouseenter="opcoesA = true" @mouseleave="opcoesA = false">
+      <div class="container" @click="opcoesA=true" @mouseleave="opcoesA = false">
         <button>Atores</button>
         <div class="custom-selectA" v-if="opcoesA">
           <div class="selected"><input type="text" id="search-actor" name="search-actor" v-model="searchA"
               placeholder="Pesquisar ator famoso..." /></div>
           <ul v-if="filteredAtores.length" class="options">
-            <li v-for="ator in filteredAtores" :key="ator.id" @click="selectAtor(ator); opcoesA = false">
+            <li v-for="ator in filteredAtores" :key="ator.id" @click="opcoesA = false; abrirAtor(ator)">
               {{ ator.name }} — {{ ator.popularity.toFixed(1) }}
             </li>
           </ul>
@@ -121,12 +124,11 @@ onMounted(() => {
       <span class="mdi mdi-magnify"></span>
     </div>
     <div class="perfil_Btn-login">
-      <button>Login</button>
       <button>Entrar</button>
+      <button>Cadastrar</button>
     </div>
   </header>
-  <p>{{ selectedP }}</p>
-  <p>{{ selectedA }}</p>
+  
 </template>
 
 <style scoped>
@@ -146,7 +148,8 @@ header {
   & .logo_Btn-filmes {
     display: flex;
     align-items: center;
-    gap: 80px;
+    gap: 60px;
+
 
     & button {
       background: none;
@@ -163,6 +166,7 @@ header {
     & .container {
       & button:first-child {
         padding: 31px 0;
+
       }
     }
   }
@@ -173,7 +177,7 @@ header {
     position: relative;
 
     & input {
-      width: 600px;
+      width: 500px;
       height: 40px;
       border-radius: 5px;
       border: none;
@@ -193,7 +197,7 @@ header {
     align-items: center;
     gap: 60px;
     margin: 0 60px 0 0;
-    padding-left: 70px;
+
 
     & button {
       background: none;
@@ -222,6 +226,7 @@ header {
   position: absolute;
   cursor: pointer;
   left: 200px;
+ 
 }
 
 .custom-selectP .selected {

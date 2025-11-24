@@ -16,7 +16,14 @@ const routes = [
     path: '/pais/:id',
     name: 'PaisView',
     component: () => import('@/views/PaisView.vue')
-  }
+  },
+  {
+  path: '/ator/:id',
+  name: 'AtorView',
+  component: () => import('@/views/AtorView.vue')
+}
+
+
 ]
 
 const router = createRouter({

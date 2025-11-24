@@ -1,14 +1,17 @@
 <script setup>
 import { ref, onMounted, watch, computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import api from '@/plugins/axios'
 
 const route = useRoute()
+const router = useRouter()
 const paisCode = ref(route.params.id)
-const paisNome = route.query.name
+const paisNome = computed(() => route.query.name)
+
 
 const filmes = ref([])
 const carregando = ref(true)
+
 
 const getFilmesPorPais = async () => {
   try {
@@ -29,11 +32,24 @@ const getFilmesPorPais = async () => {
         page: 2,
       },
     })
+    const { data: data3 } = await api.get('/discover/movie', {
+      params: {
+        with_origin_country: paisCode.value,
+        sort_by: 'popularity.desc',
+        page: 3,
+      },
+    })
+    const { data: data4 } = await api.get('/discover/movie', {
+      params: {
+        with_origin_country: paisCode.value,
+        sort_by: 'popularity.desc',
+        page: 4,
+      },
+    })
 
-    //Fazer um for que leia de um const que tenha uma qunatidade e essa contidade leia mais pagina, para automatizar.
+  
 
-
-    const filmesBrutos = [...data1.results, ...data2.results]
+    const filmesBrutos = [...data1.results, ...data2.results, ...data3.results, ...data4.results]
 
 
     const filmesComRuntime = await Promise.all(
@@ -54,6 +70,15 @@ const getFilmesPorPais = async () => {
     carregando.value = false
   }
 }
+const tamanhoGrupo = 10 
+
+const filmesAgrupados = computed(() => {
+  const grupos = []
+  for (let i = 0; i < filmes.value.length; i += tamanhoGrupo) {
+    grupos.push(filmes.value.slice(i, i + tamanhoGrupo))
+  }
+  return grupos
+})
 
 
 
@@ -84,23 +109,19 @@ const rolar = (index, direcao) => {
 }
 
 
-const tamanhoGrupo = 15 // pode ser 7, 8, 10...
-
-const filmesAgrupados = computed(() => {
-  const grupos = []
-  for (let i = 0; i < filmes.value.length; i += tamanhoGrupo) {
-    grupos.push(filmes.value.slice(i, i + tamanhoGrupo))
-  }
-  return grupos
-})
+const abrirFilme = (id) => {
+  router.push({ name: 'MovieView', params: { id } })
+}
 
 </script>
 
 <template>
+  
   <h1>{{ paisNome }} - {{ paisCode }}</h1>
 
   <p v-if="carregando">Carregando...</p>
 
+  
   <div
   v-for="(grupo, index) in filmesAgrupados"
   :key="index"
@@ -116,11 +137,14 @@ const filmesAgrupados = computed(() => {
       @click="abrirFilme(filme.id)"
     >
       <img
-        :src="'https://image.tmdb.org/t/p/w500' + filme.poster_path"
-        :alt="filme.title"
-      />
+  :src="filme.poster_path 
+        ? 'https://image.tmdb.org/t/p/w500' + filme.poster_path 
+        : '/public/sem-poster.png'"
+  :alt="filme.title"
+/>
+
       <h2>{{ filme.title }}</h2>
-      <p>{{ filme.runtime }} min</p>
+      <p>{{ filme.runtime ? filme.runtime + ' min' : 'Não informado' }}</p>
     </div>
   </div>
 
@@ -132,7 +156,7 @@ const filmesAgrupados = computed(() => {
 <style scoped>
 h1{
   margin-left: 2.7vw;
-  width: 200px;
+  width: fit-content;
   border-radius: 8px;
   color: black;
   padding: 10px;
@@ -162,7 +186,9 @@ p {
   position: relative;
   display: flex;
   align-items: center;
-  margin: 0 1vw;
+  margin: 0 1.5vw;
+  padding-bottom: 2vw;
+
 }
 
 .carrossel {
