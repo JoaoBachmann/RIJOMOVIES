@@ -1,16 +1,16 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router' // 👈 IMPORTA AQUI
+import { useRoute, useRouter } from 'vue-router'
 import api from '@/plugins/axios'
 
 const route = useRoute()
-const router = useRouter() // 👈 DEFINE AQUI
+const router = useRouter() 
 
 const filme = ref(null)
 const trailer = ref(null)
 
 const abrirAtor = (id) => {
-  router.push({ name: 'ActorView', params: { id } }) // 👈 AGORA FUNCIONA
+  router.push({ name: 'ActorView', params: { id } }) 
 }
 
 onMounted(async () => {
@@ -28,7 +28,7 @@ onMounted(async () => {
 
   const atorPrincipal = data.credits.cast[0]
   filme.value.mainActor = atorPrincipal ? atorPrincipal.name : 'Desconhecido'
-  filme.value.mainActorId = atorPrincipal ? atorPrincipal.id : null // 👈 GUARDA O ID
+  filme.value.mainActorId = atorPrincipal ? atorPrincipal.id : null 
 
   const video = data.videos.results.find(
     (v) => v.type === 'Trailer' && v.site === 'YouTube'
@@ -51,7 +51,6 @@ onMounted(async () => {
 
         <div class="ator">
           <p class="color">Principal Actor</p>
-          <!-- 👇 Passa o ID correto do ator -->
           <div @click="abrirAtor(filme.mainActorId)" class="cursor-pointer hover:underline">
             {{ filme.mainActor }}
           </div>

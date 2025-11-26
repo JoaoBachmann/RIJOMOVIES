@@ -10,8 +10,10 @@ import FooterComponent from './components/FooterComponent.vue';
   <main>
     <router-view />
   </main>
-  <FooterComponent />
 
+  <footer>
+    <FooterComponent />
+  </footer>
 
 </template>
 
