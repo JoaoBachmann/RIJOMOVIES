@@ -2,10 +2,14 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import api from '@/plugins/axios'
+
 const opcoesP = ref(false)
 const paises = ref([])
-
-
+const router = useRouter()
+const opcoesA = ref(false)
+const atores = ref([])
+const searchA = ref('')
+const searchP = ref('');
 
 const abrirPais = (pais) => {
     router.push({ 
@@ -14,12 +18,6 @@ const abrirPais = (pais) => {
         query: { name: pais.native_name || pais.english_name}
     })
 }
-const router = useRouter()
-
-
-const opcoesA = ref(false)
-const atores = ref([])
-
 
 const abrirAtor = (ator) => {
     router.push({ 
@@ -31,45 +29,58 @@ const abrirAtor = (ator) => {
 
 const getCountries = async () => {
   try {
-    const { data } = await api.get('/configuration/countries')
-    paises.value = data
+    const { data } = await api.get('/configuration/countries') // Quando puxamos da api vem mais de uma coisa, nos so pegamos o data. O await espera a resposta da api
+    paises.value = data // aqui armazenamos a data em paises
   } catch (error) {
     console.error('Erro ao buscar países:', error)
   }
 }
+
+
 const getActors = async () => {
   try {
     let allActors = []
-    for (let page = 1; page <= 20; page++) {
-      const { data } = await api.get(`/person/popular?page=${page}`)
-      allActors.push(...data.results)
+    for (let page = 1; page <= 20; page++) { // vai buscar na api 20 paginas dos atores
+      const { data } = await api.get(`/person/popular?page=${page}`) //por isso colocamos esse ${page}, pq cada vez qu o page aumentar um numero ali muda a url tmb
+      allActors.push(...data.results) //data.results é o array de atores. O ... espalha os atores dentro do allActors
     }
     atores.value = allActors
   } catch (error) {
     console.error('Erro ao buscar atores:', error)
   }
 }
-const atoresFamosos = computed(() => {
-  return atores.value.filter(ator => ator.popularity >= 5)
+
+const atoresFamosos = computed(() => { 
+  const popularity = []; 
+  for(const ator of atores.value) { 
+    if(ator.popularity >= 5) 
+    popularity.push(ator); 
+  } return popularity;
 })
 
-
-const searchA = ref('')
 
 const filteredAtores = computed(() => {
-  if (!searchA.value) return atoresFamosos.value
-  return atoresFamosos.value.filter(ator =>
-    ator.name.toLowerCase().includes(searchA.value.toLowerCase())
-  )
+  if (!searchA.value){
+    return atoresFamosos.value
+  } else {
+    const pesquisado = [];
+    for(const ator of atoresFamosos.value) {
+      if(ator.name.toLowerCase().includes(searchA.value.toLowerCase())) {
+        pesquisado.push(ator);
+      }
+    }
+    return pesquisado;
+  } 
 })
+//sdoufhuis0fg
 
 
-const searchP = ref('');
+
 const filteredCountry = computed(() => {
   const paisesSearch = [];
 
   for (const pais of paises.value) {
-    const nomePais = pais.native_name || pais.english_name;
+    const nomePais = pais.native_name || pais.english_name; // o // (ou) é para validar tanto o nome inteiro quando a abrevaicao
     if (!searchP.value || nomePais.toLowerCase().includes(searchP.value.toLowerCase())) {
       paisesSearch.push(pais);
     }
@@ -97,7 +108,7 @@ onMounted(() => {
 
         <div class="custom-selectP" v-if="opcoesP">
           <div class="selected"><input type="text" id="search-country" name="search-country" v-model="searchP"
-              placeholder="Pesquisar país..."></div>
+              placeholder="Pesquisar país..." autocomplete="off"></div>
           <ul v-show="opcoesP" class="options">
             <li v-for="pais in filteredCountry" :key="pais.iso_3166_1" @click="abrirPais(pais)"> 
                  {{ pais.native_name || pais.english_name }}
@@ -110,7 +121,7 @@ onMounted(() => {
         <button>Atores</button>
         <div class="custom-selectA" v-if="opcoesA">
           <div class="selected"><input type="text" id="search-actor" name="search-actor" v-model="searchA"
-              placeholder="Pesquisar ator famoso..." /></div>
+              placeholder="Pesquisar ator famoso..." autocomplete="off"/></div>
           <ul v-if="filteredAtores.length" class="options">
             <li v-for="ator in filteredAtores" :key="ator.id" @click="opcoesA = false; abrirAtor(ator)">
               {{ ator.name }} — {{ ator.popularity.toFixed(1) }}

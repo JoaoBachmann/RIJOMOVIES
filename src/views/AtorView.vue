@@ -5,16 +5,10 @@ import api from '@/plugins/axios'
 
 const route = useRoute()
 const router = useRouter()
-
 const ator = ref(null)
 const credits = ref(null)
 const filmesAtor = ref([])
 const offset = ref(0)
-
-const getFilmesDoAtor = async (idAtor) => {
-  const { data } = await api.get(`/person/${idAtor}/movie_credits`)
-  filmesAtor.value = data.cast
-}
 
 const next = () => {
   offset.value -= 165
@@ -24,12 +18,11 @@ const prev = () => {
   if (offset.value < 0) offset.value += 165
 }
 
-watch(
-  () => route.params.id,
-  (novoId) => {
-    if (novoId) carregarAtor(novoId)
-  },
-)
+const getFilmesDoAtor = async (idAtor) => {
+  const { data } = await api.get(`/person/${idAtor}/movie_credits`)
+  filmesAtor.value = data.cast
+} //Puxa so os filmes do ator
+
 const carregarAtor = async (id) => {
   const { data } = await api.get(`/person/${id}`, {
     params: { append_to_response: 'combined_credits,images,external_ids' },
@@ -37,22 +30,29 @@ const carregarAtor = async (id) => {
 
   ator.value = data
   credits.value = data.combined_credits
-
   const social = data.external_ids
+   // armazenando nas variaveis
 
   ator.value.links = {
     instagram: social.instagram_id ? `https://instagram.com/${social.instagram_id}` : null,
     facebook: social.facebook_id ? `https://facebook.com/${social.facebook_id}` : null,
     twitter: social.twitter_id ? `https://twitter.com/${social.twitter_id}` : null,
-  }
+  }  // Puxando os links sociais
 
   ator.value.topWorks = data.combined_credits.cast
     .sort((a, b) => b.popularity - a.popularity)
     .slice(0, 5)
 
   await getFilmesDoAtor(id)
-  offset.value = 0 // ZERA o carrossel quando muda de ator
+  offset.value = 0 // Vai zerar o carrosel quando outro ator for selecionado
 }
+
+watch(
+  () => route.params.id,
+  (novoId) => {
+    if (novoId) carregarAtor(novoId)
+  },
+) // vai dar um F5 qunado clicarmos em outro ator
 
 onMounted(() => {
   carregarAtor(route.params.id)
