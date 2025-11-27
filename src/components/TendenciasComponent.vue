@@ -119,7 +119,10 @@ onMounted(() => {
   position: absolute;
   z-index: 5;
 }
-
+.filme img {
+  width: 500px;
+  max-height: 281px;
+}
 .seta:hover {
   background-color: rgba(255, 255, 255, 0.3);
 }
