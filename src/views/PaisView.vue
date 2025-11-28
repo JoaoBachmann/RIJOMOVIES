@@ -212,9 +212,15 @@ p {
   transform: scale(1.05);
 }
 .filme img {
-  width: 500px;
-  max-height: 281px;
+  width: 200px;   
+  height: auto;         
+  object-fit: cover;     
+  border-radius: 8px;
+  transition: transform .2s;
 }
+
+
+
 
 .seta {
   background-color: rgba(0, 0, 0, 0.6);
