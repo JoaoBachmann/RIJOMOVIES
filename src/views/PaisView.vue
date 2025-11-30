@@ -7,53 +7,32 @@ const route = useRoute()
 const router = useRouter()
 const paisCode = ref(route.params.id)
 const paisNome = computed(() => route.query.name)
-
-
 const filmes = ref([])
 const carregando = ref(true)
 
 
 const getFilmesPorPais = async () => {
   try {
+const todasPaginas = []
 
-    const { data: data1 } = await api.get('/discover/movie', {
-      params: {
-        with_origin_country: paisCode.value,
-        sort_by: 'popularity.desc',
-        page: 1,
-      },
-    })
+    // Busca as páginas 1 a 4
+    for (let page = 1; page <= 4; page++) {
+      const { data } = await api.get('/discover/movie', {
+        params: {
+          with_origin_country: paisCode.value,
+          sort_by: 'popularity.desc',
+          page,
+        },
+      })
 
-
-    const { data: data2 } = await api.get('/discover/movie', {
-      params: {
-        with_origin_country: paisCode.value,
-        sort_by: 'popularity.desc',
-        page: 2,
-      },
-    })
-    const { data: data3 } = await api.get('/discover/movie', {
-      params: {
-        with_origin_country: paisCode.value,
-        sort_by: 'popularity.desc',
-        page: 3,
-      },
-    })
-    const { data: data4 } = await api.get('/discover/movie', {
-      params: {
-        with_origin_country: paisCode.value,
-        sort_by: 'popularity.desc',
-        page: 4,
-      },
-    })
-
-  
-
-    const filmesBrutos = [...data1.results, ...data2.results, ...data3.results, ...data4.results]
+      todasPaginas.push(...data.results)
+    }
 
 
-    const filmesComRuntime = await Promise.all(
-      filmesBrutos.map(async (filme) => {
+    const filmesComRuntime = await Promise.all( // Promise.all espera tudo ser resolvido antes de continuar
+      todasPaginas.map(async (filme) => {//.map percorre cada filme do array
+         // para cada filme, faz uma requisição para pegar os detalhes
+         // e retorna um novo objeto com o runtime adicionado
         try {
           const { data: detalhes } = await api.get(`/movie/${filme.id}`)
           return { ...filme, runtime: detalhes.runtime }
@@ -63,7 +42,7 @@ const getFilmesPorPais = async () => {
       })
     )
 
-    filmes.value = filmesComRuntime
+    filmes.value = filmesComRuntime // atribui o array com runtime ao ref filmes
   } catch (err) {
     console.error("Erro ao buscar filmes:", err)
   } finally {
@@ -75,7 +54,8 @@ const tamanhoGrupo = 10
 const filmesAgrupados = computed(() => {
   const grupos = []
   for (let i = 0; i < filmes.value.length; i += tamanhoGrupo) {
-    grupos.push(filmes.value.slice(i, i + tamanhoGrupo))
+    grupos.push(filmes.value.slice(i, i + tamanhoGrupo)) // divide os filmes em grupos de tamanho definido
+    // i = inicio e i + tamanhoGrupo = fim do slice, 0-10, 10-20...
   }
   return grupos
 })
@@ -87,24 +67,25 @@ onMounted(() => {
 })
 
 watch(
-  () => route.fullPath,
+  () => route.fullPath, //observa toda a rota para pegar mudanças em query params
   () => {
-    paisCode.value = route.params.id
-    getFilmesPorPais()
+    paisCode.value = route.params.id // atualiza po codigo do pais
+    getFilmesPorPais() // carrega os filmes do novo pais
   },
 )
 
 const carrosseis = ref([])
 
 const rolar = (index, direcao) => {
-  const container = carrosseis.value[index]
-  if (!container) return
+  const container = carrosseis.value[index] // index = qual carrosel rolar
+  if (!container) return // sem carrosel a funcao para
 
-  const largura = container.clientWidth
+  const largura = container.clientWidth // largura visivel do carrosel
+  // a largura vai ser usada para determinar quanto rolar
 
   container.scrollBy({
-    left: direcao === 'direita' ? largura : -largura,
-    behavior: 'smooth',
+    left: direcao === 'direita' ? largura : -largura, // direita = largura, esquerda = -largura
+    behavior: 'smooth', // animacao
   })
 }
 
