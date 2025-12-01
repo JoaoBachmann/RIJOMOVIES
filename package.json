@@ -16,7 +16,15 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
-    "vue": "^3.5.22"
+    "@fortawesome/fontawesome-free": "^7.1.0",
+    "@jamescoyle/vue-icon": "^0.1.2",
+    "@mdi/font": "^7.4.47",
+    "axios": "^1.13.1",
+    "overlay": "^1.2.5",
+    "vue": "^3.5.22",
+    "vue-loading": "^0.1.4",
+    "vue-loading-overlay": "^6.0.6",
+    "vue-router": "^4.6.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.33.0",
@@ -30,6 +38,7 @@
     "npm-run-all2": "^8.0.4",
     "oxlint": "~1.11.0",
     "prettier": "3.6.2",
+    "sass-embedded": "^1.93.2",
     "vite": "^7.1.7",
     "vite-plugin-vue-devtools": "^8.0.2"
   }
