@@ -1,11 +1,17 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import api from '@/plugins/axios'
 
 const route = useRoute()
+const router = useRouter() 
+
 const filme = ref(null)
 const trailer = ref(null)
+
+const abrirAtor = (id) => {
+  router.push({ name: 'ActorView', params: { id } }) 
+}
 
 onMounted(async () => {
   const id = route.params.id
@@ -22,6 +28,7 @@ onMounted(async () => {
 
   const atorPrincipal = data.credits.cast[0]
   filme.value.mainActor = atorPrincipal ? atorPrincipal.name : 'Desconhecido'
+  filme.value.mainActorId = atorPrincipal ? atorPrincipal.id : null 
 
   const video = data.videos.results.find((v) => v.type === 'Trailer' && v.site === 'YouTube')
 
@@ -37,6 +44,7 @@ onMounted(async () => {
       :alt="filme.title"
     />
 
+
     <div class="informacao">
       <div class="direito">
         <h1>{{ filme.title }}</h1>
@@ -44,9 +52,11 @@ onMounted(async () => {
 
         <div class="ator">
           <p class="color">Principal Actor</p>
+
           <router-link :to="`/ator/${filme.credits.cast[0].id}`" class="link-ator">
             {{ filme.mainActor }}
           </router-link>
+
         </div>
       </div>
 
@@ -56,28 +66,26 @@ onMounted(async () => {
             <p><strong>Director:</strong></p>
             <p>{{ filme.director }}</p>
           </div>
-
           <div>
             <p class="runtime"><strong>Runtime:</strong></p>
             <p>{{ filme.runtime }} min</p>
           </div>
-
           <div>
             <p class="release"><strong>Release:</strong></p>
             <p>{{ filme.release_date }}</p>
           </div>
-
           <div>
             <p class="vote"><strong>Rating:</strong></p>
             <p>{{ filme.vote_average.toFixed(1) }}⭐</p>
           </div>
-
           <div>
             <p class="genres"><strong>Genres:</strong></p>
             <p>{{ filme.genresList }}</p>
           </div>
         </div>
+
         <div v-if="trailer" class="trailer">
+
           <iframe
             width="460"
             height="250"
@@ -87,11 +95,13 @@ onMounted(async () => {
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowfullscreen
           ></iframe>
+
         </div>
       </div>
     </div>
   </div>
 </template>
+
 
 <style scoped>
 .movie-view {

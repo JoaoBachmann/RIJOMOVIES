@@ -105,7 +105,10 @@ onMounted(() => {
 .carrossel::-webkit-scrollbar {
   display: none;
 }
-
+.filme img {
+  width: 500px;
+  height: 280px;
+}
 .filme img:hover {
   transform: scale(1.05);
 }
