@@ -47,6 +47,7 @@ onMounted(() => {
 </script>
 
 <template>
+  <main>
   <div class="NovosLancamentos">
     <h1>New Releases</h1>
 
@@ -69,6 +70,7 @@ onMounted(() => {
       <button class="seta direita" @click="rolar('direita')">></button>
     </div>
   </div>
+  </main>
 </template>
 
 <style scoped>
@@ -77,6 +79,7 @@ onMounted(() => {
   font-family: 'Inter', sans-serif;
   color: white;
   border-bottom: 1px solid #444;
+
 }
 
 .NovosLancamentos h1 {
@@ -109,7 +112,10 @@ onMounted(() => {
 .filme img:hover {
   transform: scale(1.05);
 }
-
+.filme img {
+  width: 500px;
+  max-height: 281px;
+}
 .seta {
   background-color: rgba(0, 0, 0, 0.6);
   color: white;

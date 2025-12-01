@@ -1,68 +1,127 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import api from '@/plugins/axios'
-const opcoesP = ref(true)
-const paises = ref([])
-const selectedP = ref(null) // aqui vai o país escolhido
 
+const opcoesP = ref(false)
+const paises = ref([])
+const router = useRouter()
 const opcoesA = ref(false)
 const atores = ref([])
-const selectedA = ref(null) // aqui vai o ator escolhido
+const searchA = ref('')
+const searchP = ref('')
+const busca = ref('')
+const resultadosBusca = ref([])
+
+const pesquisarFilmes = async () => {
+  if (!busca.value.trim()) {
+    resultadosBusca.value = []
+    return
+  }
+
+  try {
+    const resultados = []
+
+    
+    for (let page = 1; page <= 3; page++) {
+      const { data } = await api.get('/search/movie', {
+        params: {
+          query: busca.value,
+          include_adult: false,
+          language: 'pt-BR',
+          page: page,
+        },
+      })
+
+      resultados.push(...data.results)
+    }
+
+    resultadosBusca.value = resultados
+  } catch (err) {
+    console.error('Erro ao pesquisar filmes:', err)
+  }
+}
+
+
+const abrirFilme = (id) => {
+  busca.value = '' // limpa o campo de busca
+  resultadosBusca.value = [] // limpa os resultados da busca
+  router.push({ name: 'MovieView', params: { id } })
+}
+
+const abrirPais = (pais) => {
+  router.push({
+    name: 'PaisView',
+    params: { id: pais.iso_3166_1 },
+    query: { name: pais.native_name || pais.english_name },
+  })
+}
+
+const abrirAtor = (ator) => {
+  router.push({
+    name: 'AtorView',
+    params: { id: ator.id },
+  })
+}
 
 const getCountries = async () => {
   try {
-    const { data } = await api.get('/configuration/countries')
-    paises.value = data
+    const { data } = await api.get('/configuration/countries') // Quando puxamos da api vem mais de uma coisa, nos so pegamos o data. O await espera a resposta da api
+    paises.value = data // aqui armazenamos a data em paises
   } catch (error) {
     console.error('Erro ao buscar países:', error)
   }
 }
+
 const getActors = async () => {
   try {
     let allActors = []
-    for (let page = 1; page <= 20; page++) { // muda o número pra quantas páginas quiser
-      const { data } = await api.get(`/person/popular?page=${page}`)
-      allActors.push(...data.results)
+    for (let page = 1; page <= 20; page++) {
+      // vai buscar na api 20 paginas dos atores
+      const { data } = await api.get(`/person/popular?page=${page}`) //por isso colocamos esse ${page}, pq cada vez qu o page aumentar um numero ali muda a url tmb
+      allActors.push(...data.results) //data.results é o array de atores. O ... espalha os atores dentro do allActors
     }
     atores.value = allActors
   } catch (error) {
     console.error('Erro ao buscar atores:', error)
   }
 }
+
 const atoresFamosos = computed(() => {
-  return atores.value.filter(ator => ator.popularity >= 5)
+  const popularity = []
+  for (const ator of atores.value) {
+    if (ator.popularity >= 5) popularity.push(ator)
+  }
+  return popularity
 })
-
-
-const searchA = ref('')
 
 const filteredAtores = computed(() => {
-  if (!searchA.value) return atoresFamosos.value
-  return atoresFamosos.value.filter(ator =>
-    ator.name.toLowerCase().includes(searchA.value.toLowerCase())
-  )
+  if (!searchA.value) {
+    return atoresFamosos.value
+  } else {
+    const pesquisado = []
+    for (const ator of atoresFamosos.value) {
+      if (ator.name.toLowerCase().includes(searchA.value.toLowerCase())) {
+        pesquisado.push(ator)
+      }
+    }
+
+    return pesquisado
+  }
 })
 
-
-const searchP = ref('');
 const filteredCountry = computed(() => {
-  const paisesSearch = [];
+  const paisesSearch = []
 
   for (const pais of paises.value) {
-    const nomePais = pais.native_name || pais.english_name;
+    const nomePais = pais.native_name || pais.english_name // o // (ou) é para validar tanto o nome inteiro quando a abrevaicao
     if (!searchP.value || nomePais.toLowerCase().includes(searchP.value.toLowerCase())) {
-      paisesSearch.push(pais);
+      paisesSearch.push(pais)
     }
   }
 
-  return paisesSearch;
-});
-//se conseguir traduzir os nomes dos países para portugues
-
-const selectAtor = (ator) => {
-  selectedA.value = ator.name
-  searchA.value = ''
-}
+  return paisesSearch
+})
 
 onMounted(() => {
   getCountries()
@@ -73,47 +132,88 @@ onMounted(() => {
 <template>
   <header>
     <div class="logo_Btn-filmes">
-      <img src="/public/RiJoMovies.png" alt="RijoMovies Logo" />
+      <router-link to="/"><img src="/public/RiJoMovies.png" alt="RijoMovies Logo" /></router-link>
 
-      <div class="container" @mouseenter="opcoesP = true" @mouseleave="opcoesP = false">
+      <div class="container" @mouseleave="opcoesP = false" @click="opcoesP = true">
         <button>Filmes</button>
 
         <div class="custom-selectP" v-if="opcoesP">
-          <div class="selected"><input type="text" id="search-country" name="search-country" v-model="searchP"
-              placeholder="Pesquisar país..."></div>
+          <div class="selected">
+            <input
+              type="text"
+              id="search-country"
+              name="search-country"
+              v-model="searchP"
+              placeholder="Pesquisar país..."
+              autocomplete="off"
+            />
+          </div>
           <ul v-show="opcoesP" class="options">
-            <li v-for="pais in filteredCountry" :key="pais.iso_3166_1" @click="
-              selectedP = pais.native_name || pais.english_name; opcoesP = false">
-              {{ pais.native_name || pais.english_name }}
+            <li
+              v-for="pais in filteredCountry"
+              :key="pais.iso_3166_1"
+              @click.stop="
+                abrirPais(pais);
+                searchP = '';
+                opcoesP = false
+              "
+            >
+                  {{ pais.native_name || pais.english_name }}
             </li>
           </ul>
         </div>
       </div>
 
-      <div class="container" @mouseenter="opcoesA = true" @mouseleave="opcoesA = false">
+      <div class="container" @click="opcoesA = true" @mouseleave="opcoesA = false">
         <button>Atores</button>
         <div class="custom-selectA" v-if="opcoesA">
-          <div class="selected"><input type="text" id="search-actor" name="search-actor" v-model="searchA"
-              placeholder="Pesquisar ator famoso..." /></div>
+          <div class="selected">
+            <input
+              type="text"
+              id="search-actor"
+              name="search-actor"
+              v-model="searchA"
+              placeholder="Pesquisar ator famoso..."
+              autocomplete="off"
+            />
+          </div>
           <ul v-if="filteredAtores.length" class="options">
-            <li v-for="ator in filteredAtores" :key="ator.id" @click="selectAtor(ator); opcoesA = false">
+            <li
+              v-for="ator in filteredAtores"
+              :key="ator.id"
+              @click.stop=" searchA = ''; abrirAtor(ator); opcoesA = false"
+            >
               {{ ator.name }} — {{ ator.popularity.toFixed(1) }}
             </li>
           </ul>
         </div>
       </div>
     </div>
+
     <div class="search">
-      <input type="text" placeholder="Pesquisar..." />
-      <span class="mdi mdi-magnify"></span>
+      <input type="text" placeholder="Pesquisar..." v-model="busca" @keyup="pesquisarFilmes"/>
+      <span class="btn-pesquisa mdi mdi-magnify" @click="pesquisarFilmes()"></span>
+      <!--Da de colocar duas classe juntas-->
+
+
+      <ul v-if="resultadosBusca.length" class="resultados-busca">
+        <li
+          v-for="filme in resultadosBusca"
+          :key="filme.id" @click="abrirFilme(filme.id)" class="item-busca"
+        >
+          <img
+            :src="`https://image.tmdb.org/t/p/w92${filme.poster_path}`" alt="Poster" class="poster-busca"
+          />
+          <span>{{ filme.title }}</span>
+        </li>
+      </ul>
     </div>
+
     <div class="perfil_Btn-login">
-      <button>Login</button>
       <button>Entrar</button>
+      <button>Cadastrar</button>
     </div>
   </header>
-  <p>{{ selectedP }}</p>
-  <p>{{ selectedA }}</p>
 </template>
 
 <style scoped>
@@ -133,7 +233,7 @@ header {
   & .logo_Btn-filmes {
     display: flex;
     align-items: center;
-    gap: 80px;
+    gap: 60px;
 
     & button {
       background: none;
@@ -160,7 +260,7 @@ header {
     position: relative;
 
     & input {
-      width: 600px;
+      width: 500px;
       height: 40px;
       border-radius: 5px;
       border: none;
@@ -168,7 +268,7 @@ header {
       font-size: 16px;
     }
 
-    & span {
+    & span.btn-pesquisa {
       font-size: 25px;
       position: absolute;
       right: 10px;
@@ -180,7 +280,6 @@ header {
     align-items: center;
     gap: 60px;
     margin: 0 60px 0 0;
-    padding-left: 70px;
 
     & button {
       background: none;
@@ -216,7 +315,7 @@ header {
 
   & input {
     width: 180px;
-    background:  black;
+    background: black;
     border: none;
     color: white;
     outline: none;
@@ -295,4 +394,45 @@ header {
 .custom-selectA .options li:hover {
   background: rgb(40, 40, 40);
 }
+
+.resultados-busca {
+  position: absolute;
+  top: 67px;
+  width: 500px;
+  background: black;
+  color: white;
+  list-style: none;
+  padding: 0;
+  max-height: 250px;
+  overflow-y: auto;
+  border: 1px solid rgba(245, 179, 83, 1);
+  border-radius: 5px;
+  z-index: 20;
+}
+
+.resultados-busca li {
+  padding: 10px;
+  cursor: pointer;
+}
+.resultados-busca span {
+  
+}
+.resultados-busca li:hover {
+  background: rgb(40, 40, 40);
+}
+
+.item-busca {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.poster-busca {
+  margin: 0;
+  margin-left: 20px;
+  width: 60px;
+  height: auto;
+  border-radius: 4px;
+}
+
 </style>

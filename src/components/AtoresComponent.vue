@@ -8,7 +8,7 @@ const carrossel = ref(null)
 const router = useRouter()
 
 const abrirAtor = (id) => {
-  router.push({ name: 'ActorView', params: { id } }) // precisa ter a rota ActorView
+  router.push({ name: 'AtorView', params: { id } })
 }
 
 const carregarAtores = async () => {
@@ -79,7 +79,7 @@ onMounted(() => {
 
 <style scoped>
 .AtoresPopulares {
-  margin: 20px 50px;
+  margin: 20px 50px 0 50px;
   font-family: 'Inter', sans-serif;
   color: white;
   border-bottom: 1px solid #444;

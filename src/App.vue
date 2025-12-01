@@ -1,14 +1,22 @@
 <script setup>
 import HeaderComponent from './components/HeaderComponent.vue';
 import FooterComponent from './components/FooterComponent.vue';
+
+
+
 </script>
 
 <template>
+  
   <header>
-    <HeaderComponent />
+    <HeaderComponent/>
   </header>
+
   <main>
-    <router-view />
+    <router-view v-slot="{ Component }">
+  <component :is="Component"/>
+</router-view>
+
   </main>
 
   <footer>
