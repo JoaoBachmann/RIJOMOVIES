@@ -114,7 +114,10 @@ onMounted(() => {
 .filme img:hover {
   transform: scale(1.05);
 }
-
+.filme img {
+  width: 500px;
+  max-height: 281px;
+}
 .seta {
   background-color: rgba(0, 0, 0, 0.6);
   color: white;

@@ -10,7 +10,7 @@ const trailer = ref(null)
 onMounted(async () => {
   const id = route.params.id
   const { data } = await api.get(`/movie/${id}`, {
-    params: { append_to_response: 'credits,videos' }
+    params: { append_to_response: 'credits,videos' },
   })
 
   filme.value = data
@@ -23,38 +23,38 @@ onMounted(async () => {
   const atorPrincipal = data.credits.cast[0]
   filme.value.mainActor = atorPrincipal ? atorPrincipal.name : 'Desconhecido'
 
-  const video = data.videos.results.find(
-    (v) => v.type === 'Trailer' && v.site === 'YouTube'
-  )
+  const video = data.videos.results.find((v) => v.type === 'Trailer' && v.site === 'YouTube')
 
   trailer.value = video || data.videos.results[0] || null
 })
-
 </script>
 
 <template>
   <div v-if="filme" class="movie-view">
-
-    <img class="backdrop" :src="`https://image.tmdb.org/t/p/original${filme.backdrop_path}`" :alt="filme.title" />
+    <img
+      class="backdrop"
+      :src="`https://image.tmdb.org/t/p/original${filme.backdrop_path}`"
+      :alt="filme.title"
+    />
 
     <div class="informacao">
-
       <div class="direito">
         <h1>{{ filme.title }}</h1>
         <p class="p">&nbsp;&nbsp;&nbsp;&nbsp;{{ filme.overview }}</p>
 
         <div class="ator">
           <p class="color">Principal Actor</p>
-          <p>{{ filme.mainActor }}</p>
+          <router-link :to="`/ator/${filme.credits.cast[0].id}`" class="link-ator">
+            {{ filme.mainActor }}
+          </router-link>
         </div>
       </div>
 
       <div class="esquerdo">
-
         <div class="line">
           <div>
             <p><strong>Director:</strong></p>
-            <p> {{ filme.director }} </p>
+            <p>{{ filme.director }}</p>
           </div>
 
           <div>
@@ -78,17 +78,18 @@ onMounted(async () => {
           </div>
         </div>
         <div v-if="trailer" class="trailer">
-          <iframe width="460" height="250" :src="`https://www.youtube.com/embed/${trailer.key}`" title="Trailer"
+          <iframe
+            width="460"
+            height="250"
+            :src="`https://www.youtube.com/embed/${trailer.key}`"
+            title="Trailer"
             frameborder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowfullscreen></iframe>
+            allowfullscreen
+          ></iframe>
         </div>
-
       </div>
-
     </div>
-
-
   </div>
 </template>
 
@@ -133,10 +134,9 @@ onMounted(async () => {
 
 .direito .p {
   font-size: 1rem;
-
 }
 
-.direito .color{
+.direito .color {
   color: rgb(150, 150, 150);
   font-size: 1.5rem;
   margin-top: 9rem;
@@ -145,6 +145,10 @@ onMounted(async () => {
   margin-top: 3rem;
 }
 
+.link-ator {
+  color: white;
+  text-decoration: none;
+}
 
 .line {
   border-top: 1px solid rgb(84, 84, 84);
@@ -161,7 +165,6 @@ onMounted(async () => {
 
 .esquerdo p {
   font-size: 1rem;
-
 }
 
 .esquerdo p strong {

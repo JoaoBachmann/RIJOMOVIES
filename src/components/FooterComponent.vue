@@ -1,5 +1,7 @@
 <script setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+const router = useRouter()
 const mensagem = ref('');
 
 const enviarMensagem = () => {
@@ -14,12 +16,7 @@ const enviarMensagem = () => {
 
 <template>
   <Footer>
-    <div class="imagemFita">
-      <div class="fita1"></div>
-      <div class="fita1"></div>
-      <div class="fita1"></div>
-      <div class="fita1"></div>
-    </div>
+   
     <div class="infoFooter">
       <div class="newsletter">
         <h2>Compartilhe sua experiencia no site</h2>
@@ -32,7 +29,7 @@ const enviarMensagem = () => {
           <a href=""><span class="mdi mdi-facebook"></span></a>
           <a href=""><span class="mdi mdi-youtube"></span></a>
         </div>
-        <p>© 2024 <a href="App.vue"><span>RijoMovies</span></a>. Todos os direitos reservados.</p>
+        <p>© 2024 <RouterLink to="/"><span>RijoMovies</span></RouterLink>. Todos os direitos reservados.</p>
       </div>
 
       <img src="/public/claquete.png" alt="">

@@ -46,7 +46,6 @@ onMounted(async () => {
 </script>
 
 <template>
-
   <Loading
     v-model:active="isLoading"
     :is-full-page="true"
@@ -72,10 +71,12 @@ onMounted(async () => {
       </div>
     </div>
   </div>
+
 </template>
 
 
 <style scoped>
+
   .carousel {
     width: 100%;
     height: 80vh;
