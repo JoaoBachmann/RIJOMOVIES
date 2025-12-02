@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch} from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import api from '@/plugins/axios'
 
@@ -10,7 +10,7 @@ const filme = ref(null)
 const trailer = ref(null)
 
 const abrirAtor = (id) => {
-  router.push({ name: 'ActorView', params: { id } }) 
+  router.push({ name: 'AtorView', params: { id } }) 
 }
 
 onMounted(async () => {
@@ -34,6 +34,34 @@ onMounted(async () => {
 
   trailer.value = video || data.videos.results[0] || null
 })
+
+watch(
+  () => route.params.id,
+  async (novoId) => {
+    if (!novoId) return
+
+    const { data } = await api.get(`/movie/${novoId}`, {
+      params: { append_to_response: 'credits,videos' },
+    })
+
+    filme.value = data
+
+    const diretor = data.credits.crew.find((pessoa) => pessoa.job === 'Director')
+    filme.value.director = diretor ? diretor.name : 'Desconhecido'
+
+    filme.value.genresList = data.genres.map((g) => g.name).join(', ')
+
+    const atorPrincipal = data.credits.cast[0]
+    filme.value.mainActor = atorPrincipal ? atorPrincipal.name : 'Desconhecido'
+    filme.value.mainActorId = atorPrincipal ? atorPrincipal.id : null
+
+    const video = data.videos.results.find(
+      (v) => v.type === 'Trailer' && v.site === 'YouTube'
+    )
+
+    trailer.value = video || data.videos.results[0] || null
+  }
+)
 </script>
 
 <template>
